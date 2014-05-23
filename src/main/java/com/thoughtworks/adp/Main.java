@@ -11,25 +11,40 @@ import org.openqa.selenium.firefox.FirefoxDriver;
 
 public class Main {
 
+    private LoginPage loginPage;
+    private HomePage homePage;
+    private ManutencaoDaEfetividadePage manutencaoDaEfetividadePage;
+    private User user;
+    private WebDriver driver;
+
     public static void main(String[] args) {
+        new Main().execute();
+    }
 
-        ConfigurationProperties configurationProperties = new ConfigurationProperties();
+    public void execute(){
+        user = readConfigurations();
 
-        User user = new User(configurationProperties.getUser(), configurationProperties.getPassword());
-
-
-        WebDriver driver = new FirefoxDriver();
+        driver = new FirefoxDriver();
         driver.get("https://www.adpweb.com.br/rhweb8/");
 
-        LoginPage loginPage = new LoginPage(driver, user);
+        initiatePages();
+
         loginPage.login();
-
-        HomePage homePage = new HomePage(driver);
         homePage.goToAppointmentMaintenance();
-
-        ManutencaoDaEfetividadePage manutencaoDaEfetividadePage = new ManutencaoDaEfetividadePage(driver);
         manutencaoDaEfetividadePage.adjustEmployeesFrequency();
 
         driver.quit();
+    }
+
+    private void initiatePages() {
+        loginPage = new LoginPage(driver, user);
+        homePage = new HomePage(driver);
+        manutencaoDaEfetividadePage = new ManutencaoDaEfetividadePage(driver);
+    }
+
+    private User readConfigurations() {
+        ConfigurationProperties configurationProperties = new ConfigurationProperties();
+
+        return new User(configurationProperties.getUser(), configurationProperties.getPassword());
     }
 }
